@@ -1,6 +1,5 @@
-import React from 'react';
 import './App.css';
-import { SignIn, SignUp, MainMenu, ForgotPassword } from './containers';
+import { SignIn, SignUp, MainMenu } from './containers';
 import { BrowserRouter, Route, Routes } from 'react-router-dom'
 
 
