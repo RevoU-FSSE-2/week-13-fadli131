@@ -1,9 +1,10 @@
-import React, { FormEvent, useState } from 'react';
+import React, { useState } from 'react';
 import { TextField, Button, Grid, Typography, Box, Avatar, CssBaseline, Container, FormControlLabel, Checkbox, Link } from '@mui/material';
 import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import Swal from 'sweetalert2';
+import { useFormik } from 'formik'; 
 import * as Yup from 'yup';
 
 const validationSchema = Yup.object().shape({
@@ -15,41 +16,45 @@ const SignIn: React.FC = () => {
   const navigate = useNavigate();
   const [error, setError] = useState<string | null>(null);
 
-  const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
-    const data = new FormData(event.currentTarget);
-    const email = data.get('email') as string;
-    const password = data.get('password') as string;
+  const formik = useFormik({
+    initialValues: {
+      email: '',
+      password: '',
+    },
+    validationSchema: validationSchema,
+    onSubmit: async (values) => {
+      const { email, password } = values;
 
-    try {
-      const response = await axios.post('https://mock-api.arikmpt.com/api/user/login', {
-        email,
-        password,
-      });
-
-      if (response.status === 200) {
-        console.log('Login berhasil:', response.data);
-        sessionStorage.setItem('userToken', response.data.data.token);
-        Swal.fire({
-          icon: 'success',
-          title: 'Login Successful',
-          text: 'You have successfully logged in. You will be redirected to dashboard shortly...',
-        }).then((result) => {
-          if (result.isConfirmed) {
-            navigate('/MainMenu');
-          }
-          setInterval(() => {
-            navigate('/MainMenu');
-          }, 3000);
+      try {
+        const response = await axios.post('https://mock-api.arikmpt.com/api/user/login', {
+          email,
+          password,
         });
-      } else {
-        setError('Login gagal. Periksa kembali email dan password Anda.');
+
+        if (response.status === 200) {
+          console.log('Login berhasil:', response.data);
+          sessionStorage.setItem('userToken', response.data.data.token);
+          Swal.fire({
+            icon: 'success',
+            title: 'Login Successful',
+            text: 'You have successfully logged in. You will be redirected to dashboard shortly...',
+          }).then((result) => {
+            if (result.isConfirmed) {
+              navigate('/MainMenu');
+            }
+            setInterval(() => {
+              navigate('/MainMenu');
+            }, 3000);
+          });
+        } else {
+          setError('Login failed. Double check your email and password.');
+        }
+      } catch (error) {
+        console.error('There is an error:', error);
+        setError('An error occurred while trying to log in. Please try again later.');
       }
-    } catch (error) {
-      console.error('Terjadi kesalahan:', error);
-      setError('Terjadi kesalahan saat mencoba masuk. Silakan coba lagi nanti.');
-    }
-  };
+    },
+  });
 
   return (
     <Container component="main" maxWidth="xs">
@@ -68,7 +73,7 @@ const SignIn: React.FC = () => {
         <Typography component="h1" variant="h5">
           Sign in
         </Typography>
-        <form onSubmit={handleSubmit} noValidate sx={{ mt: 1 }}>
+        <form onSubmit={formik.handleSubmit} noValidate>
           <TextField
             margin="normal"
             required
@@ -78,6 +83,10 @@ const SignIn: React.FC = () => {
             name="email"
             autoComplete="email"
             autoFocus
+            value={formik.values.email} 
+            onChange={formik.handleChange} 
+            error={formik.touched.email && Boolean(formik.errors.email)} 
+            helperText={formik.touched.email && formik.errors.email} 
           />
           <TextField
             margin="normal"
@@ -88,6 +97,10 @@ const SignIn: React.FC = () => {
             type="password"
             id="password"
             autoComplete="current-password"
+            value={formik.values.password} 
+            onChange={formik.handleChange} 
+            error={formik.touched.password && Boolean(formik.errors.password)}
+            helperText={formik.touched.password && formik.errors.password}
           />
           <FormControlLabel
             control={<Checkbox value="remember" color="primary" />}
@@ -113,7 +126,7 @@ const SignIn: React.FC = () => {
               </Link>
             </Grid>
             <Grid item>
-              <Link href="/sign-up" variant="body2">
+              <Link href="/SignUp" variant="body2">
                 {"Don't have an account? Sign Up"}
               </Link>
             </Grid>

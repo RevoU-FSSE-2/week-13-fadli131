@@ -5,7 +5,7 @@ import Avatar from '@mui/material/Avatar';
 import TextField from '@mui/material/TextField';
 import Button from '@mui/material/Button';
 import Grid from '@mui/material/Grid';
-import Box from '@mui/material/Box';
+
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import axios from 'axios';
 import Swal from 'sweetalert2';
@@ -57,7 +57,6 @@ const SignUp = () => {
       <Container component="main" maxWidth="xs">
         <div>
           <Avatar sx={{ m: 1, bgcolor: 'secondary.main' }}>
-            {/* Avatar Icon */}
           </Avatar>
           <Typography component="h1" variant="h5">
             Sign up

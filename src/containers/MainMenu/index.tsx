@@ -294,7 +294,7 @@ const MainMenu: React.FC = () => {
                     <DataGrid
                       rows={data}
                       columns={columns}
-                      pageSize={1}
+                    
                     />
                   ) : (
                     <div>No data available.</div>
